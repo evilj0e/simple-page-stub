@@ -4,13 +4,17 @@ cache:
   paths:
   - node_modules/
 
-stages:
-  - test
-
-test_async:
-  stage: test
+test:
   script:
-   - npm install
-   - npm run test
-  tags:
-    - docker
+  - npm install
+  - npm run test
+
+staging:
+  type: deploy
+  script:
+  - npm install
+  - npm run build
+  - gem install dpl
+  - dpl --provider=heroku --app=miracle-fontend-dev --api-key=$HEROKU_STAGING_API_KEY
+  only:
+    - development
