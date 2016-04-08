@@ -4,17 +4,25 @@ cache:
   paths:
   - node_modules/
 
+before_script:
+  - apt-get -qq update
+  - apt-get -qq install -y python2.7 python2.7-dev build-essential make gcc g++ libicu-dev
+  - npm -g install npm --silent
+  - npm set progress=false
+  - npm install --silent
+
 test:
   script:
-  - npm install
   - npm run test
+  only:
+  - development
 
 staging:
   type: deploy
   script:
-  - npm install
   - npm run build
+  - apt-get install -yqq ruby ruby-dev
   - gem install dpl
-  - dpl --provider=heroku --app=miracle-fontend-dev --api-key=$HEROKU_STAGING_API_KEY
+  - dpl --provider=heroku --app=$HEROKU_STAGING_NAME --api-key=$HEROKU_STAGING_API_KEY
   only:
-    - development
+  - development
