@@ -8,17 +8,18 @@
     "url": "git+https://evilj0e@bitbucket.org/evilj0e/simple-page-stub.git"
   },
   "scripts": {
-    "development": "gulp serve",
-    "build": "gulp",
+    "development": "node_modules/.bin/gulp serve",
+    "build": "node_modules/.bin/gulp",
     "clean": "rm -rf build",
     "hint": "node_modules/.bin/jshint .",
     "cs": "node_modules/.bin/jscs .",
     "codestyle": "npm run hint & npm run cs",
     "validate": "npm ls",
     "test": "npm run build && npm run codestyle && (cd build && ../node_modules/.bin/mocha ../test && cd ..) && npm run clean",
-    "lint": "jshint ."
+    "lint": "jshint .",
+    "start": "npm i && npm run build && node index.js"
   },
-  "devDependencies": {
+  "dependencies": {
     "gulp": "^3.9.1",
     "gulp-plumber": "^1.1.0",
     "gulp-static-handlebars": "^1.2.0",
@@ -39,7 +40,8 @@
     "mocha": "^2.4.5",
     "should": "^8.3.0",
     "jscs": "^2.11.0",
-    "jshint": "^2.9.1"
+    "jshint": "^2.9.1",
+    "express": "^4.13.4"
   },
   "pre-commit": [
     "validate",
