@@ -1,24 +1,25 @@
 /* dependencies */
-var fs = require('fs');
-var gulp = require('gulp');
-var plumber = require('gulp-plumber');
-var concat = require('gulp-concat');
-var rename = require('gulp-rename');
-var server = require('browser-sync');
+var fs          = require('fs');
+var gulp        = require('gulp');
+var plumber     = require('gulp-plumber');
+var concat      = require('gulp-concat');
+var rename      = require('gulp-rename');
+var server      = require('browser-sync');
 
-var handlebars = require('gulp-static-handlebars');
+var handlebars  = require('gulp-static-handlebars');
 
-var less = require('gulp-less');
+var less        = require('gulp-less');
 var autoprefixer = require('gulp-autoprefixer');
-var postcss = require('gulp-postcss');
-var size = require('postcss-size');
-var autoreset = require('postcss-autoreset');
-var mergeRules = require('postcss-merge-rules');
+var postcss     = require('gulp-postcss');
+var size        = require('postcss-size');
+var autoreset   = require('postcss-autoreset');
+var mergeRules  = require('postcss-merge-rules');
+var stylelint   = require('stylelint');
 
-var htmlmin = require('gulp-htmlmin');
-var nano = require('gulp-cssnano');
-var imgmin = require('gulp-imagemin');
-var pngquant = require('imagemin-pngquant');
+var htmlmin     = require('gulp-htmlmin');
+var nano        = require('gulp-cssnano');
+var imgmin      = require('gulp-imagemin');
+var pngquant    = require('imagemin-pngquant');
 
 /* configs */
 var data = fs.readFileSync(__dirname + '/blocks/data.json');
@@ -37,7 +38,7 @@ var config = {
             'last 2 Opera versions',
             'last 2 Edge versions'
         ]},
-        postcss: [size, mergeRules, autoreset]
+        postcss: [stylelint(), size, mergeRules, autoreset]
     },
     image: {
         sourcePath: __dirname + '/blocks/**/*.{jpg,ico,png,jpeg,gif,svg,xml}',
