@@ -35,17 +35,15 @@
     "postcss-size": "1.0.0",
     "gulp-imagemin": "2.4.0",
     "imagemin-pngquant": "4.2.2",
-    "express": "4.13.4"
-  },
-  "devDependencies": {
-      "browser-sync": "2.11.2",
-      "precommit-hook": "3.0.0",
-      "mocha": "2.4.5",
-      "should": "8.3.0",
-      "jscs": "2.11.0",
-      "jshint": "2.9.1",
-      "stylelint": "5.1.0",
-      "stylelint-config-standard": "4.0.1"
+    "express": "4.13.4",
+    "precommit-hook": "3.0.0",
+    "mocha": "2.4.5",
+    "should": "8.3.0",
+    "jscs": "2.11.0",
+    "jshint": "2.9.1",
+    "stylelint": "5.1.0",
+    "stylelint-config-standard": "4.0.1",
+    "browser-sync": "2.11.2"
   },
   "pre-commit": [
     "validate",
