@@ -43,6 +43,10 @@ var config = {
     image: {
         sourcePath: __dirname + '/blocks/**/*.{jpg,ico,png,jpeg,gif,svg,xml}',
         destPath: __dirname + '/build/images'
+    },
+    font: {
+        sourcePath: __dirname + '/blocks/**/*.{eot,ttf,woff,woff2}',
+        destPath: __dirname + '/build/fonts'
     }
 };
 
@@ -65,11 +69,18 @@ gulp.task('build-style', function () {
     gulp.src(config.style.sourcePath)
         .pipe(plumber())
         .pipe(less())
-        .pipe(concat('index.css'))
+        .pipe(concat('_index.css'))
         .pipe(autoprefixer(config.style.autoprefixer))
         .pipe(postcss(config.style.postcss))
         .pipe(nano())
         .pipe(gulp.dest(config.style.destPath));
+});
+
+/* move fonts */
+gulp.task('move-fonts', function () {
+    gulp.src(config.font.sourcePath)
+        .pipe(rename({dirname: ''}))
+        .pipe(gulp.dest(config.font.destPath));
 });
 
 /* minify & move images */
@@ -85,7 +96,7 @@ gulp.task('move-images', function () {
 });
 
 /* hot reload task */
-gulp.task('serve', ['build-html', 'build-style', 'move-images'], function () {
+gulp.task('serve', ['build-html', 'build-style', 'move-images', 'move-fonts'], function () {
     server.init({
         server: './build/',
         notify: false,
@@ -99,9 +110,12 @@ gulp.task('serve', ['build-html', 'build-style', 'move-images'], function () {
     gulp.watch(config.html.sourcePath, ['build-html']);
     gulp.watch(config.html.destPath + '/*.html').on('change', server.reload);
 
+    gulp.watch(config.font.sourcePath, ['move-fonts']);
+    gulp.watch(config.font.destPath + '/*.{eot,ttf,woff,woff2}').on('change', server.reload);
+
     gulp.watch(config.image.sourcePath, ['move-images']);
     gulp.watch(config.image.destPath + '/*.{jpg,ico,png,jpeg,gif,svg,xml}').on('change', server.reload);
 });
 
 /* on default task build html & css */
-gulp.task('default', ['build-html', 'build-style', 'move-images']);
+gulp.task('default', ['build-html', 'build-style', 'move-images', 'move-fonts']);
