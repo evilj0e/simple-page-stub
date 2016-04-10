@@ -73,6 +73,7 @@ gulp.task('build-style', function () {
         .pipe(autoprefixer(config.style.autoprefixer))
         .pipe(postcss(config.style.postcss))
         .pipe(nano())
+        .pipe(rename('index.css'))
         .pipe(gulp.dest(config.style.destPath));
 });
 
