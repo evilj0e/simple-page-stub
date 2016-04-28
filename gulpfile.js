@@ -12,12 +12,12 @@ var less        = require('gulp-less');
 var autoprefixer = require('gulp-autoprefixer');
 var postcss     = require('gulp-postcss');
 var size        = require('postcss-size');
-var autoreset   = require('postcss-autoreset');
 var mergeRules  = require('postcss-merge-rules');
 var stylelint   = require('stylelint');
 
 var htmlmin     = require('gulp-htmlmin');
-var nano        = require('gulp-cssnano');
+var cssmin      = require('gulp-cssmin');
+var uglify      = require('gulp-uglify');
 var imgmin      = require('gulp-imagemin');
 var pngquant    = require('imagemin-pngquant');
 
@@ -26,27 +26,41 @@ var data = fs.readFileSync(__dirname + '/blocks/data.json');
 var config = {
     html: {
         sourcePath: __dirname + '/blocks/common/common.hbs',
-        destPath: __dirname + '/build'
+        destPath: __dirname + '/build',
+        exts: '/*.html',
+        tasks: ['build-html']
     },
     style: {
         sourcePath: __dirname + '/blocks/**/*.less',
         destPath: __dirname + '/build/css',
+        exts: '/*.css',
+        tasks: ['build-style'],
         autoprefixer: {browsers: [
-            'last 1 version',
-            'last 2 Chrome versions',
-            'last 2 Firefox versions',
-            'last 2 Opera versions',
-            'last 2 Edge versions'
+            'last 5 version',
+            'last 5 Chrome versions',
+            'last 5 Firefox versions',
+            'last 5 Opera versions',
+            'last 5 Edge versions'
         ]},
-        postcss: [stylelint(), size, mergeRules, autoreset]
+        postcss: [stylelint(), size, mergeRules]
+    },
+    js: {
+        sourcePath: __dirname + '/blocks/**/*.js',
+        destPath: __dirname + '/build/js',
+        exts: '/*.js',
+        tasks: ['build-js']
     },
     image: {
         sourcePath: __dirname + '/blocks/**/*.{jpg,ico,png,jpeg,gif,svg,xml}',
-        destPath: __dirname + '/build/images'
+        destPath: __dirname + '/build/images',
+        exts: '/*.{jpg,ico,png,jpeg,gif,svg,xml}',
+        tasks: ['build-images']
     },
     font: {
         sourcePath: __dirname + '/blocks/**/*.{eot,ttf,woff,woff2}',
-        destPath: __dirname + '/build/fonts'
+        destPath: __dirname + '/build/fonts',
+        exts: '/*.{eot,ttf,woff,woff2}',
+        tasks: ['build-fonts']
     }
 };
 
@@ -72,9 +86,17 @@ gulp.task('build-style', function () {
         .pipe(concat('_index.css'))
         .pipe(autoprefixer(config.style.autoprefixer))
         .pipe(postcss(config.style.postcss))
-        .pipe(nano())
+        .pipe(cssmin())
         .pipe(rename('index.css'))
         .pipe(gulp.dest(config.style.destPath));
+});
+
+/* process js */
+gulp.task('build-js', function () {
+    return gulp.src(config.js.sourcePath)
+        .pipe(concat('index.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest(config.js.destPath))
 });
 
 /* move fonts */
@@ -87,17 +109,17 @@ gulp.task('move-fonts', function () {
 /* minify & move images */
 gulp.task('move-images', function () {
     gulp.src(config.image.sourcePath)
+        .pipe(rename({dirname: ''}))
         .pipe(imgmin({
             progressive: true,
             svgoPlugins: [{removeViewBox: false}],
             use: [pngquant()]
         }))
-        .pipe(rename({dirname: ''}))
         .pipe(gulp.dest(config.image.destPath));
 });
 
 /* hot reload task */
-gulp.task('serve', ['build-html', 'build-style', 'move-images', 'move-fonts'], function () {
+gulp.task('serve', ['build-html', 'build-style', 'move-images', 'move-fonts', 'build-js'], function () {
     server.init({
         server: './build/',
         notify: false,
@@ -105,18 +127,19 @@ gulp.task('serve', ['build-html', 'build-style', 'move-images', 'move-fonts'], f
         ui: false
     });
 
-    gulp.watch(config.style.sourcePath, ['build-style']);
-    gulp.watch(config.style.destPath + '/*.css').on('change', server.reload);
+    Object.keys(config).map(function (key) {
+        var currentType = config[key];
+        var timeout;
 
-    gulp.watch(config.html.sourcePath, ['build-html']);
-    gulp.watch(config.html.destPath + '/*.html').on('change', server.reload);
-
-    gulp.watch(config.font.sourcePath, ['move-fonts']);
-    gulp.watch(config.font.destPath + '/*.{eot,ttf,woff,woff2}').on('change', server.reload);
-
-    gulp.watch(config.image.sourcePath, ['move-images']);
-    gulp.watch(config.image.destPath + '/*.{jpg,ico,png,jpeg,gif,svg,xml}').on('change', server.reload);
+        gulp.watch(currentType.sourcePath, currentType.tasks);
+        gulp.watch(currentType.destPath + currentType.exts).on('change', function () {
+            timeout && clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                server.reload();
+                clearTimeout(timeout);
+            }, 300)});
+    });
 });
 
 /* on default task build html & css */
-gulp.task('default', ['build-html', 'build-style', 'move-images', 'move-fonts']);
+gulp.task('default', ['build-html', 'build-style', 'move-images', 'move-fonts', 'build-js']);
