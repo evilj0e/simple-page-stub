@@ -19,5 +19,5 @@ staging:
   - npm run build
   - SLUG=$(echo ${CI_BUILD_REF_NAME} | sed 's/[^a-zA-Z0-9\-_]/-/g ; s/-\+/-/g')
   - node_modules/.bin/surge build $HEROKU_STAGING_NAME-${SLUG}.surge.sh
-  exept:
+  except:
   - master
