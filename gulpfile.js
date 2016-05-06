@@ -64,7 +64,6 @@ var config = {
     }
 };
 
-
 /* build html from handlebars */
 gulp.task('build-html', function () {
     gulp.src(config.html.sourcePath)
@@ -133,7 +132,9 @@ gulp.task('serve', ['build-html', 'build-style', 'move-images', 'move-fonts', 'b
 
         gulp.watch(currentType.sourcePath, currentType.tasks);
         gulp.watch(currentType.destPath + currentType.exts).on('change', function () {
-            timeout && clearTimeout(timeout);
+            if (timeout) {
+                clearTimeout(timeout);
+            }
             timeout = setTimeout(function () {
                 server.reload();
                 clearTimeout(timeout);

@@ -5,8 +5,6 @@ cache:
   - node_modules/
 
 before_script:
-  - apt-get -qq update
-  - apt-get -qq install -y python2.7 python2.7-dev build-essential make gcc g++ libicu-dev
   - npm -g install npm --silent
   - npm set progress=false
   - npm install --silent
@@ -14,15 +12,12 @@ before_script:
 test:
   script:
   - npm run test
-  only:
-  - development
 
 staging:
   type: deploy
   script:
   - npm run build
-  - apt-get install -yqq ruby ruby-dev
-  - gem install dpl
-  - dpl --provider=heroku --app=$HEROKU_STAGING_NAME --api-key=$HEROKU_STAGING_API_KEY
-  only:
-  - development
+  - SLUG=$(echo ${CI_BUILD_REF_NAME} | sed 's/[^a-zA-Z0-9\-_]/-/g ; s/-\+/-/g')
+  - node_modules/.bin/surge build $HEROKU_STAGING_NAME-${SLUG}.surge.sh
+  exept:
+  - master

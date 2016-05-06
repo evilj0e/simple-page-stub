@@ -13,10 +13,10 @@
     "clean": "rm -rf build",
     "hint": "node_modules/.bin/jshint .",
     "cs": "node_modules/.bin/jscs .",
+    "mc": "cd build && ../node_modules/.bin/mocha ../test && cd ..",
     "codestyle": "npm run hint & npm run cs",
-    "test": "npm run build && npm run codestyle && (cd build && ../node_modules/.bin/mocha ../test && cd ..) && npm run clean",
-    "lint": "jshint .",
-    "start": "npm i && npm run build && node index.js"
+    "test": "npm run build && (npm run codestyle & npm run mc) && npm run clean",
+    "lint": "jshint ."
   },
   "dependencies": {
     "gulp": "^3.9.1",
@@ -34,17 +34,17 @@
     "postcss-size": "^1.0.0",
     "gulp-imagemin": "^2.4.0",
     "imagemin-pngquant": "^4.2.2",
-    "express": "^4.13.4",
     "precommit-hook": "^3.0.0",
     "jscs": "^2.11.0",
     "jshint": "^2.9.1",
     "stylelint": "^5.1.0",
-    "stylelint-config-standard": "^4.0.1",
-    "browser-sync": "^2.11.2"
+    "stylelint-config-standard": "^4.0.1"
   },
   "devDependencies": {
     "mocha": "^2.4.5",
-    "should": "^8.3.0"
+    "should": "^8.3.0",
+    "browser-sync": "^2.11.2",
+    "surge": "^0.18.0"
   },
   "pre-commit": [
     "test"
